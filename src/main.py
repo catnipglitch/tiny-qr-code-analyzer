@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 from qr_analyzer import QRCodeAnalyzer
 import pyperclip
+from PIL import ImageGrab
+import io
 
 class QRCodeAnalyzerApp:
     """
@@ -69,10 +71,25 @@ class QRCodeAnalyzerApp:
 
     def analyze_from_clipboard(self):
         """
-        クリップボード上のデータを解析して結果を表示する。
+        クリップボード上のQRコード画像を解析して結果を表示する。
         """
-        result = self.analyzer.from_clipboard()
-        self.display_result(result)
+        try:
+            # クリップボードから画像を取得
+            clipboard_image = ImageGrab.grabclipboard()
+            if clipboard_image is None:
+                self.display_result("クリップボードに画像がありません")
+                return
+
+            # 画像をバイトデータに変換
+            image_bytes = io.BytesIO()
+            clipboard_image.save(image_bytes, format='PNG')
+            image_bytes.seek(0)
+
+            # 画像を解析
+            result = self.analyzer.from_image(image_bytes)
+            self.display_result(result)
+        except Exception as e:
+            self.display_result(f"クリップボードから画像を解析できませんでした: {e}")
 
     def analyze_from_webcam(self):
         """

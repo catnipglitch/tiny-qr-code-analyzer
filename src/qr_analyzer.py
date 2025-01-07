@@ -1,3 +1,6 @@
+from PIL import Image
+from pyzbar.pyzbar import decode
+
 class QRCodeAnalyzer:
     """
     QRコードの解析を行うクラス。
@@ -10,20 +13,23 @@ class QRCodeAnalyzer:
         pass
 
     @staticmethod
-    def from_image(image_path):
+    def from_image(image_source):
         """
-        画像ファイルからQRコードを解析する静的メソッド。
+        画像ファイルまたはバイトデータからQRコードを解析する静的メソッド。
 
-        :param image_path: 画像ファイルのパス
+        :param image_source: 画像ファイルのパスまたはバイトデータ
         :return: デコードされたQRコードデータ（文字列）またはNone
         """
-        from PIL import Image
-        from pyzbar.pyzbar import decode
-
-        image = Image.open(image_path)
-        decoded_objects = decode(image)
-        if decoded_objects:
-            return decoded_objects[0].data.decode('utf-8')
+        try:
+            if isinstance(image_source, str):
+                image = Image.open(image_source)
+            else:
+                image = Image.open(image_source)
+            decoded_objects = decode(image)
+            if decoded_objects:
+                return decoded_objects[0].data.decode('utf-8')
+        except Exception as e:
+            print(f"画像の読み込みに失敗しました: {e}")
         return None
 
     @staticmethod
