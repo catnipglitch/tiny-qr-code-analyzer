@@ -1,0 +1,6 @@
+opencv-python
+pyzbar
+Pillow
+tkinter
+pyperclip
+opencv-python-headless
